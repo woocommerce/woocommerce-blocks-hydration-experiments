@@ -4,7 +4,7 @@ Tags: gutenberg, woocommerce, woo commerce, products, blocks, woocommerce blocks
 Requires at least: 5.8
 Tested up to: 5.8
 Requires PHP: 7.0
-Stable tag: 6.0.1
+Stable tag: 6.0.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -84,6 +84,12 @@ Release and roadmap notes available on the [WooCommerce Developers Blog](https:/
 5. WooCommerce Product Blocks in the block inserter menu
 
 == Changelog ==
+
+= 6.0.2 - 2021-09-30 =
+
+#### Bug Fixes
+
+- Fix fatal error when loading WooCommerce Blocks and one of its integration on an earlier version of WooCommerce Core.
 
 = 6.0.1 - 2021-09-29 =
 
