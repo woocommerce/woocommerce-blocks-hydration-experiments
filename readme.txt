@@ -4,7 +4,7 @@ Tags: gutenberg, woocommerce, woo commerce, products, blocks, woocommerce blocks
 Requires at least: 5.8
 Tested up to: 5.8
 Requires PHP: 7.0
-Stable tag: 6.5.1
+Stable tag: 6.5.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -84,6 +84,12 @@ Release and roadmap notes available on the [WooCommerce Developers Blog](https:/
 5. WooCommerce Product Blocks in the block inserter menu
 
 == Changelog ==
+
+= 6.5.2 - 2022-01-17 =
+
+#### Bug Fixes
+
+- Update WooCommerce plugin slug for Block Templates. ([5519](https://github.com/woocommerce/woocommerce-gutenberg-products-block/pull/5519))
 
 = 6.5.1 - 2021-12-22 =
 
