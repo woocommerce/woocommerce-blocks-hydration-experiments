@@ -20,7 +20,7 @@ declare global {
 	namespace JSX {
 		interface IntrinsicElements {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			'gutenberg-inner-blocks': React.DetailedHTMLProps<
+			'wp-inner-blocks': React.DetailedHTMLProps<
 				React.HTMLAttributes< HTMLElement >,
 				HTMLElement
 			>;
@@ -49,11 +49,11 @@ const Children = ( { value, providedContext } ) => {
 		return null;
 	}
 	return (
-		<gutenberg-inner-blocks
+		<wp-inner-blocks
 			ref={ ( el ) => {
 				if ( el !== null ) {
 					// listen for the ping from the child
-					el.addEventListener( 'gutenberg-context', ( event ) => {
+					el.addEventListener( 'wp-block-context', ( event ) => {
 						// We have to also destructure `event.detail.context` because there can
 						// already exist a property in the context with the same name.
 						event.detail.context = {
@@ -70,11 +70,11 @@ const Children = ( { value, providedContext } ) => {
 };
 Children.shouldComponentUpdate = () => false;
 
-class GutenbergBlock extends HTMLElement {
+class WpBlock extends HTMLElement {
 	connectedCallback() {
 		setTimeout( () => {
 			// ping the parent for the context
-			const event = new CustomEvent( 'gutenberg-context', {
+			const event = new CustomEvent( 'wp-block-context', {
 				detail: {},
 				bubbles: true,
 				cancelable: true,
@@ -82,17 +82,21 @@ class GutenbergBlock extends HTMLElement {
 			this.dispatchEvent( event );
 
 			const usesContext = JSON.parse(
-				this.getAttribute( 'data-gutenberg-context-used' ) as string
+				this.getAttribute(
+					'data-wp-block-uses-block-context'
+				) as string
 			);
 			const providesContext = JSON.parse(
-				this.getAttribute( 'data-gutenberg-context-provided' ) as string
+				this.getAttribute(
+					'data-wp-block-provides-block-context'
+				) as string
 			);
 			const attributes = JSON.parse(
-				this.getAttribute( 'data-gutenberg-attributes' ) as string
+				this.getAttribute( 'data-wp-block-attributes' ) as string
 			);
 			const sourcedAttributes = JSON.parse(
 				this.getAttribute(
-					'data-gutenberg-sourced-attributes'
+					'data-wp-block-sourced-attributes'
 				) as string
 			);
 
@@ -111,18 +115,16 @@ class GutenbergBlock extends HTMLElement {
 			// the `usesContext` of its block.json
 			const context = pickKeys( event.detail.context, usesContext );
 
-			const blockType = this.getAttribute( 'data-gutenberg-block-type' );
+			const blockType = this.getAttribute( 'data-wp-block-type' );
 			const blockProps = {
 				className: this.children[ 0 ].className,
 				style: this.children[ 0 ].style,
 			};
 
-			const innerBlocks = this.querySelector(
-				'template.gutenberg-inner-blocks'
-			);
+			const innerBlocks = this.querySelector( 'wp-inner-blocks' );
 			const Comp = window.blockTypes.get( blockType );
-			const technique = this.getAttribute( 'data-gutenberg-hydrate' );
-			const media = this.getAttribute( 'data-gutenberg-media' );
+			const technique = this.getAttribute( 'data-wp-block-hydrate' );
+			const media = this.getAttribute( 'data-wp-block-media' );
 			const hydrationOptions = { technique, media };
 			hydrate(
 				<>
@@ -139,7 +141,7 @@ class GutenbergBlock extends HTMLElement {
 						/>
 					</Comp>
 					<template
-						className="gutenberg-inner-blocks"
+						className="wp-inner-blocks"
 						suppressHydrationWarning={ true }
 					/>
 				</>,
@@ -155,6 +157,6 @@ class GutenbergBlock extends HTMLElement {
 //
 // We need to ensure that the component registration code is only run once
 // because it throws if you try to register an element with the same name twice.
-if ( customElements.get( 'gutenberg-interactive-block' ) === undefined ) {
-	customElements.define( 'gutenberg-interactive-block', GutenbergBlock );
+if ( customElements.get( 'wp-block' ) === undefined ) {
+	customElements.define( 'wp-block', WpBlock );
 }
