@@ -126,7 +126,18 @@ final class BlockTypesController {
 		return preg_replace( '/^<div /', '<div ' . implode( ' ', $escaped_data_attributes ) . ' ', trim( $content ) );
 	}
 
-	function block_hydration_wrapper( $block_content, $block, $instance ) {
+	/**
+	 * Wraps the block with a <wp-block> custom element.
+	 * Serializes block's attributes and context and passes them to the wrapper.
+	 * On the frontend, the wrapper is responsible for deserializing the
+	 * attributes and context and hydrating the block that it wraps.
+	 *
+	 * @param string  $block_content Block content.
+	 * @param array   $block         Parsed block data.
+	 * @param WpBlock $instance      Instance of the block.
+	 * @return string
+	 */
+	public function block_hydration_wrapper( $block_content, $block, $instance ) {
 		// We might want to use a flag from block.json as the criterion here.
 		if ( ! in_array(
 			$block['blockName'],
@@ -138,22 +149,22 @@ final class BlockTypesController {
 			return $block_content;
 		}
 
-		$block_type = $instance->block_type;
+		$block_type       = $instance->block_type;
 		$attr_definitions = $block_type->attributes;
 
-		$attributes = array();
+		$attributes         = array();
 		$sourced_attributes = array();
-		foreach( $attr_definitions as $attr => $definition ) {
+		foreach ( $attr_definitions as $attr => $definition ) {
 			if ( ! empty( $definition['public'] ) ) {
 				if ( ! empty( $definition['source'] ) ) {
 					$sourced_attributes[ $attr ] = array(
-						"selector" => $definition['selector'], // TODO: Guard against unset.
-						"source" => $definition['source']
+						'selector' => $definition['selector'], // TODO: Guard against unset.
+						'source'   => $definition['source'],
 					);
 				} else {
-					if ( array_key_exists ( $attr, $block['attrs'] ) ) {
-						$attributes[ $attr ] = $block['attrs'][$attr];
-					} else if ( isset( $definition['default'] ) ) {
+					if ( array_key_exists( $attr, $block['attrs'] ) ) {
+						$attributes[ $attr ] = $block['attrs'][ $attr ];
+					} elseif ( isset( $definition['default'] ) ) {
 						$attributes[ $attr ] = $definition['default'];
 					}
 				}
@@ -164,7 +175,7 @@ final class BlockTypesController {
 		// TODO: The following is a bit hacky. If we stick with this technique, we might
 		// want to change apply_block_supports() to accepts a block as its argument.
 		\WP_Block_Supports::$block_to_render = $block;
-		$block_supports_attributes = \WP_Block_Supports::get_instance()->apply_block_supports();
+		$block_supports_attributes           = \WP_Block_Supports::get_instance()->apply_block_supports();
 		\WP_Block_Supports::$block_to_render = $previous_block_to_render;
 
 		$block_wrapper = sprintf(
@@ -177,11 +188,11 @@ final class BlockTypesController {
 			'data-wp-block-props="%6$s" ' .
 			'data-wp-block-hydration="idle">',
 			esc_attr( $block['blockName'] ),
-			esc_attr( json_encode( $block_type->uses_context ) ),
-			esc_attr( json_encode( $block_type->provides_context ) ),
-			esc_attr( json_encode( $attributes ) ),
-			esc_attr( json_encode( $sourced_attributes ) ),
-			esc_attr( json_encode( $block_supports_attributes ) )
+			esc_attr( wp_json_encode( $block_type->uses_context ) ),
+			esc_attr( wp_json_encode( $block_type->provides_context ) ),
+			esc_attr( wp_json_encode( $attributes ) ),
+			esc_attr( wp_json_encode( $sourced_attributes ) ),
+			esc_attr( wp_json_encode( $block_supports_attributes ) )
 		) . '%1$s</wp-block>';
 
 		$template_wrapper = '<template class="wp-inner-blocks">%1$s</template>';
