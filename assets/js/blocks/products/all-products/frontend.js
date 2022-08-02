@@ -2,7 +2,6 @@
  * External dependencies
  */
 import { StoreNoticesProvider } from '@woocommerce/base-context';
-import { renderFrontend } from '@woocommerce/base-utils';
 
 /**
  * Internal dependencies
@@ -15,22 +14,12 @@ import { registerBlockType } from '../../../base/utils/bhe-frontend';
  *
  * @param {*} props
  */
-// const AllProductsFrontend = ( props ) => {
-// 	return (
-// 		<StoreNoticesProvider context="wc/all-products">
-// 			<Block { ...props } />
-// 		</StoreNoticesProvider>
-// 	);
-// };
+const AllProductsFrontend = ( props ) => {
+	return (
+		<StoreNoticesProvider context="wc/all-products">
+			<Block { ...props } />
+		</StoreNoticesProvider>
+	);
+};
 
-// const getProps = ( el ) => ( {
-// 	attributes: JSON.parse( el.dataset.attributes ),
-// } );
-
-// renderFrontend( {
-// 	selector: '.wp-block-woocommerce-all-products',
-// 	Block: AllProductsFrontend,
-// 	getProps,
-// } );
-
-registerBlockType( 'woocommerce/all-products', Block );
+registerBlockType( 'woocommerce/all-products', AllProductsFrontend );
