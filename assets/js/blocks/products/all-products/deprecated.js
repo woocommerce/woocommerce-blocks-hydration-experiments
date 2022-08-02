@@ -11,6 +11,33 @@ import { getBlockClassName } from '../utils.js';
 
 const { attributes: attributeDefinitions } = metadata;
 
+const v2 = {
+	attributes: attributeDefinitions,
+	save( { attributes } ) {
+		const dataAttributes = {};
+		Object.keys( attributes )
+			.sort()
+			.forEach( ( key ) => {
+				dataAttributes[ key ] = attributes[ key ];
+			} );
+		const data = {
+			'data-attributes': JSON.stringify( dataAttributes ),
+		};
+
+		return (
+			<div
+				className={ getBlockClassName(
+					'wc-block-all-products',
+					attributes
+				) }
+				{ ...data }
+			>
+				<InnerBlocks.Content />
+			</div>
+		);
+	},
+};
+
 const v1 = {
 	attributes: Object.assign( {}, attributeDefinitions, {
 		rows: { type: 'number', default: 1 },
@@ -33,4 +60,4 @@ const v1 = {
 	},
 };
 
-export default [ v1 ];
+export default [ v2, v1 ];
