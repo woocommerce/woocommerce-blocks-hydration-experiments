@@ -5,9 +5,12 @@ import { TotalsCoupon } from '@woocommerce/base-components/cart-checkout';
 import { useStoreCartCoupons } from '@woocommerce/base-context/hooks';
 import { getSetting } from '@woocommerce/settings';
 import { TotalsWrapper } from '@woocommerce/blocks-checkout';
+import { useState } from '@wordpress/element';
 
 const Block = ( { className }: { className: string } ): JSX.Element | null => {
 	const couponsEnabled = getSetting( 'couponsEnabled', true );
+
+	const [ count, setCount ] = useState( 0 );
 
 	const { applyCoupon, isApplyingCoupon } = useStoreCartCoupons( 'wc/cart' );
 
@@ -21,6 +24,9 @@ const Block = ( { className }: { className: string } ): JSX.Element | null => {
 				onSubmit={ applyCoupon }
 				isLoading={ isApplyingCoupon }
 			/>
+			<button
+				onClick={ () => setCount( count + 1 ) }
+			>{ `Counter update: ${ count }` }</button>
 		</TotalsWrapper>
 	);
 };
