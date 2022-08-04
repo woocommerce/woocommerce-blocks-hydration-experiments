@@ -11,7 +11,7 @@ import { hydrate } from './bhe-element';
 
 declare global {
 	interface Window {
-		blockRegistry: BlockRegistry;
+		blockTypes: Map< string, ReactElement >;
 	}
 }
 
@@ -28,73 +28,6 @@ declare global {
 	}
 }
 
-/**
- * A container for the block registry.
- * This could have been a simple `Map`, were it not for the need for the
- * `whenRegistered` method which is used to await the registration of a block
- * with a particular name.
- */
-class BlockRegistry {
-	// It's a static property so that I don't have to deal with the `this`
-	// reference. Since this property is used inside of the proxy handler,
-	// we would have to do a manual workaround to get the correct `this` reference.
-	static #listeners = new Map< string, () => void >();
-
-	// Normally, the registry would also be a Map, but I didn't want to complicate
-	// the implementation as the Map cannot be transparently wrapped in a proxy.
-	// More details in
-	// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy#no_private_property_forwarding
-	// So, for now, we use a plain object.
-	static #registry = new Proxy( {} as Record< string, ReactElement >, {
-		set( target, prop, receiver, value ) {
-			const val = Reflect.set( target, prop, receiver, value );
-			const listener = BlockRegistry.#listeners.get( prop as string );
-			if ( listener !== undefined ) listener();
-			return val;
-		},
-	} );
-
-	#addListener( name: string, listener: () => void ) {
-		BlockRegistry.#listeners.set( name, listener );
-	}
-
-	get( name: string ) {
-		return BlockRegistry.#registry[ name ];
-	}
-
-	set( name: string, block: ReactElement ) {
-		return ( BlockRegistry.#registry[ name ] = block );
-	}
-
-	/**
-	 * Returns a Promise that resolves when the named block is registered.
-	 *
-	 * @param  name    The name of the block that we want to await until it's registered.
-	 * @param  timeout The optional timeout in milliseconds.
-	 * @return 	A Promise that fulfills with the React component when the block becomes
-	 * 					registered with the given name. If a block has already been defined with
-	 *          the name, the promise will immediately fulfill. If the block does
-	 *          not get registered within the timeout (default = 10s), the Promise will reject.
-	 */
-	whenRegistered( name: string, timeout = 10000 ) {
-		return new Promise( ( resolve, reject ) => {
-			let Comp = BlockRegistry.#registry[ name ];
-			if ( Comp ) {
-				resolve( Comp );
-			} else {
-				this.#addListener( name, () => {
-					Comp = BlockRegistry.#registry[ name ];
-					if ( Comp ) resolve( BlockRegistry.#registry[ name ] );
-				} );
-				setTimeout( () => {
-					BlockRegistry.#listeners.delete( name );
-					reject( new Error( `Block ${ name } not registered` ) );
-				}, timeout );
-			}
-		} );
-	}
-}
-
 // We assign `blockTypes` to window to make sure it's a global singleton.
 //
 // Have to do this because of the way we are currently bundling the code
@@ -103,12 +36,12 @@ class BlockRegistry {
 // We COULD fix this by doing some webpack magic to spit out the code in
 // `gutenberg-packages` to a shared chunk but assigning `blockTypes` to window
 // is a cheap hack for now that will be fixed once we can merge this code into Gutenberg.
-if ( typeof window.blockRegistry === 'undefined' ) {
-	window.blockRegistry = new BlockRegistry();
+if ( typeof window.blockTypes === 'undefined' ) {
+	window.blockTypes = new Map();
 }
 
 export const registerBlockType = ( name: string, Comp: ReactElement ) => {
-	window.blockRegistry.set( name, Comp );
+	window.blockTypes.set( name, Comp );
 };
 
 const Children = ( { value, providedContext } ) => {
@@ -139,18 +72,7 @@ Children.shouldComponentUpdate = () => false;
 
 class WpBlock extends HTMLElement {
 	connectedCallback() {
-		setTimeout( async () => {
-			const blockType = this.getAttribute( 'data-wp-block-type' );
-
-			let Comp;
-			try {
-				Comp = await window.blockRegistry.whenRegistered( blockType );
-			} catch ( e ) {
-				// If the block does not get registered within 10 seconds, an error will
-				// be thrown and we should bail out of hydrating this block.
-				return;
-			}
-
+		setTimeout( () => {
 			// ping the parent for the context
 			const event = new CustomEvent( 'wp-block-context', {
 				detail: {},
@@ -193,12 +115,14 @@ class WpBlock extends HTMLElement {
 			// the `usesContext` of its block.json
 			const context = pickKeys( event.detail.context, usesContext );
 
+			const blockType = this.getAttribute( 'data-wp-block-type' );
 			const blockProps = {
 				className: this.children[ 0 ].className,
 				style: this.children[ 0 ].style,
 			};
 
 			const innerBlocks = this.querySelector( 'wp-inner-blocks' );
+			const Comp = window.blockTypes.get( blockType );
 			const technique = this.getAttribute( 'data-wp-block-hydrate' );
 			const media = this.getAttribute( 'data-wp-block-media' );
 			const hydrationOptions = { technique, media };
