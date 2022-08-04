@@ -19,26 +19,33 @@
 	},
 	"attributes": {
 		"columns": {
-			"type": "number"
+			"type": "number",
+			"public": "true"
 		},
 		"rows": {
-			"type": "number"
+			"type": "number",
+			"public": "true"
 		},
 		"alignButtons": {
-			"type": "boolean"
+			"type": "boolean",
+			"public": "true"
 		},
 		"contentVisibility": {
-			"type": "object"
+			"type": "object",
+			"public": "true"
 		},
 		"orderby": {
-			"type": "string"
+			"type": "string",
+			"public": "true"
 		},
 		"layoutConfig": {
-			"type": "array"
+			"type": "array",
+			"public": "true"
 		},
 		"isPreview": {
 			"type": "boolean",
-			"default": false
+			"default": false,
+			"public": "true"
 		}
 	}
 }

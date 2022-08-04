@@ -47,6 +47,7 @@ final class BlockTypesController {
 	protected function init() {
 		add_action( 'init', array( $this, 'register_blocks' ) );
 		add_filter( 'render_block', array( $this, 'add_data_attributes' ), 10, 2 );
+		add_filter( 'render_block', array( $this, 'block_hydration_wrapper' ), 10, 3 );
 		add_action( 'woocommerce_login_form_end', array( $this, 'redirect_to_field' ) );
 		add_filter( 'widget_types_to_hide_from_legacy_widget_block', array( $this, 'hide_legacy_widgets_with_block_equivalent' ) );
 	}
@@ -97,6 +98,10 @@ final class BlockTypesController {
 			return $content;
 		}
 
+		if ( 'woocommerce/all-products' === $block_name ) {
+			return $content;
+		}
+
 		$attributes              = (array) $block['attrs'];
 		$exclude_attributes      = [ 'className', 'align' ];
 		$escaped_data_attributes = [
@@ -117,6 +122,82 @@ final class BlockTypesController {
 		}
 
 		return preg_replace( '/^<div /', '<div ' . implode( ' ', $escaped_data_attributes ) . ' ', trim( $content ) );
+	}
+
+	/**
+	 * Wraps the block with a <wp-block> custom element.
+	 * Serializes block's attributes and context and passes them to the wrapper.
+	 * On the frontend, the wrapper is responsible for deserializing the
+	 * attributes and context and hydrating the block that it wraps.
+	 *
+	 * @param string  $block_content Block content.
+	 * @param array   $block         Parsed block data.
+	 * @param WpBlock $instance      Instance of the block.
+	 * @return string
+	 */
+	public function block_hydration_wrapper( $block_content, $block, $instance ) {
+		// We might want to use a flag from block.json as the criterion here.
+		if ( ! in_array(
+			$block['blockName'],
+			array(
+				'woocommerce/all-products',
+			),
+			true
+		) ) {
+			return $block_content;
+		}
+
+		$block_type       = $instance->block_type;
+		$attr_definitions = $block_type->attributes;
+
+		$attributes         = array();
+		$sourced_attributes = array();
+		foreach ( $attr_definitions as $attr => $definition ) {
+			if ( ! empty( $definition['public'] ) ) {
+				if ( ! empty( $definition['source'] ) ) {
+					$sourced_attributes[ $attr ] = array(
+						'selector' => $definition['selector'], // TODO: Guard against unset.
+						'source'   => $definition['source'],
+					);
+				} else {
+					if ( array_key_exists( $attr, $block['attrs'] ) ) {
+						$attributes[ $attr ] = $block['attrs'][ $attr ];
+					} elseif ( isset( $definition['default'] ) ) {
+						$attributes[ $attr ] = $definition['default'];
+					}
+				}
+			}
+		}
+
+		$previous_block_to_render = \WP_Block_Supports::$block_to_render;
+		// TODO: The following is a bit hacky. If we stick with this technique, we might
+		// want to change apply_block_supports() to accepts a block as its argument.
+		\WP_Block_Supports::$block_to_render = $block;
+		$block_supports_attributes           = \WP_Block_Supports::get_instance()->apply_block_supports();
+		\WP_Block_Supports::$block_to_render = $previous_block_to_render;
+
+		$block_wrapper = sprintf(
+			'<wp-block ' .
+			'data-wp-block-type="%1$s" ' .
+			'data-wp-block-uses-block-context="%2$s" ' .
+			'data-wp-block-provides-block-context="%3$s" ' .
+			'data-wp-block-attributes="%4$s" ' .
+			'data-wp-block-sourced-attributes="%5$s" ' .
+			'data-wp-block-props="%6$s" ' .
+			'data-wp-block-hydration="idle">',
+			esc_attr( $block['blockName'] ),
+			esc_attr( wp_json_encode( $block_type->uses_context ) ),
+			esc_attr( wp_json_encode( $block_type->provides_context ) ),
+			esc_attr( wp_json_encode( $attributes ) ),
+			esc_attr( wp_json_encode( $sourced_attributes ) ),
+			esc_attr( wp_json_encode( $block_supports_attributes ) )
+		) . '%1$s</wp-block>';
+
+		$template_wrapper = '<template class="wp-inner-blocks">%1$s</template>';
+
+		$empty_template = sprintf( $template_wrapper, '' );
+		$template       = sprintf( $template_wrapper, sprintf( $block_wrapper, $block_content . $empty_template ) );
+		return sprintf( $block_wrapper, $block_content . $template );
 	}
 
 	/**
