@@ -155,7 +155,7 @@ final class BlockTypesController {
 		}
 
 		$block_type       = $instance->block_type;
-		$attr_definitions = $block_type->attributes;
+		$attr_definitions = isset( $block_type ) ? $block_type->attributes : [];
 
 		$attributes         = array();
 		$sourced_attributes = array();
@@ -193,8 +193,8 @@ final class BlockTypesController {
 			'data-wp-block-props="%6$s" ' .
 			'data-wp-block-hydration="idle">',
 			esc_attr( $block['blockName'] ),
-			esc_attr( wp_json_encode( $block_type->uses_context ) ),
-			esc_attr( wp_json_encode( $block_type->provides_context ) ),
+			esc_attr( wp_json_encode( isset( $block_type ) ? $block_type->uses_context : [] ) ),
+			esc_attr( wp_json_encode( isset( $block_type ) ? $block_type->provides_context : [] ) ),
 			esc_attr( wp_json_encode( $attributes ) ),
 			esc_attr( wp_json_encode( $sourced_attributes ) ),
 			esc_attr( wp_json_encode( $block_supports_attributes ) )
