@@ -10,6 +10,7 @@ import { useState } from '@wordpress/element';
 const Block = ( { className }: { className: string } ): JSX.Element | null => {
 	const couponsEnabled = getSetting( 'couponsEnabled', true );
 
+	/* Added a temporary setState to easily check hydration */
 	const [ count, setCount ] = useState( 0 );
 
 	const { applyCoupon, isApplyingCoupon } = useStoreCartCoupons( 'wc/cart' );
@@ -24,6 +25,7 @@ const Block = ( { className }: { className: string } ): JSX.Element | null => {
 				onSubmit={ applyCoupon }
 				isLoading={ isApplyingCoupon }
 			/>
+			{ /* Added a temporary button to easily check hydration */ }
 			<button
 				onClick={ () => setCount( count + 1 ) }
 			>{ `Counter update: ${ count }` }</button>

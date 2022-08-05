@@ -159,10 +159,12 @@ registerCheckoutBlock( {
 	),
 } );
 
+// Hide registering the block the default way, using instead bhe-frontend.
 registerBlockType(
 	'woocommerce/cart-order-summary-coupon-form-block',
 	CouponBlock
 );
+
 // registerCheckoutBlock( {
 // 	metadata: metadata.CART_ORDER_SUMMARY_COUPON_FORM,
 // component: lazy(
