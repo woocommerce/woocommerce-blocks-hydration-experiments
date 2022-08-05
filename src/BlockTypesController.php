@@ -104,6 +104,10 @@ final class BlockTypesController {
 			return $content;
 		}
 
+		if ( 'woocommerce/cart-order-summary-coupon-form-block' === $block_name ) {
+			return $content;
+		}
+
 		$attributes              = (array) $block['attrs'];
 		$exclude_attributes      = [ 'className', 'align' ];
 		$escaped_data_attributes = [
@@ -143,6 +147,7 @@ final class BlockTypesController {
 			$block['blockName'],
 			array(
 				'woocommerce/all-products',
+				'woocommerce/cart-order-summary-coupon-form-block',
 			),
 			true
 		) ) {
