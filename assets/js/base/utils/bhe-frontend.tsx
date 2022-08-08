@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { ReactElement } from 'react';
+import { unmountComponentAtNode } from 'react-dom';
 
 /**
  * Internal dependencies
@@ -149,6 +150,11 @@ class WpBlock extends HTMLElement {
 				hydrationOptions
 			);
 		} );
+	}
+
+	disconnectedCallback() {
+		// Unmount the React component, running callbacks and cleaning up its state.
+		unmountComponentAtNode( this );
 	}
 }
 
