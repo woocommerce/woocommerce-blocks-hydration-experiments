@@ -143,6 +143,18 @@ const renderInnerBlocks = ( {
 	}
 	return Array.from( children ).map( ( node: Node, index: number ) => {
 		/**
+		 * Do not process the node if its a `<wp-block>` element.
+		 */
+		if (
+			node instanceof HTMLElement &&
+			node instanceof window.customElements.get( 'wp-block' )
+		) {
+			const reactElement = parse( node.outerHTML );
+
+			if ( isValidElement( reactElement ) )
+				return cloneElement( reactElement );
+		}
+		/**
 		 * This will grab the blockName from the data- attributes stored in block markup. Without a blockName, we cannot
 		 * convert the HTMLElement to a React component.
 		 */
