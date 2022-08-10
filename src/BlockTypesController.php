@@ -8,6 +8,7 @@ use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Blocks\BlockTypes\Cart;
 use Automattic\WooCommerce\Blocks\BlockTypes\Checkout;
+use Automattic\WooCommerce\StoreApi\Utilities\NoticeHandler;
 
 /**
  * BlockTypesController class.
@@ -154,8 +155,12 @@ final class BlockTypesController {
 			return $block_content;
 		}
 
-		$block_type       = $instance->block_type;
-		$attr_definitions = isset( $block_type ) ? $block_type->attributes : [];
+		$block_type = $instance->block_type;
+		if ( ! $block_type ) {
+			// We might use a better way to flag it here.
+			wc_add_notice( 'You need to make a server registration of ' . $block['blockName'], 'error' );
+		}
+		$attr_definitions = $block_type->attributes;
 
 		$attributes         = array();
 		$sourced_attributes = array();
@@ -193,8 +198,8 @@ final class BlockTypesController {
 			'data-wp-block-props="%6$s" ' .
 			'data-wp-block-hydration="idle">',
 			esc_attr( $block['blockName'] ),
-			esc_attr( wp_json_encode( isset( $block_type ) ? $block_type->uses_context : [] ) ),
-			esc_attr( wp_json_encode( isset( $block_type ) ? $block_type->provides_context : [] ) ),
+			esc_attr( wp_json_encode( $block_type->uses_context ) ),
+			esc_attr( wp_json_encode( $block_type->provides_context ) ),
 			esc_attr( wp_json_encode( $attributes ) ),
 			esc_attr( wp_json_encode( $sourced_attributes ) ),
 			esc_attr( wp_json_encode( $block_supports_attributes ) )
@@ -301,6 +306,7 @@ final class BlockTypesController {
 				[
 					'AllProducts',
 					'Cart',
+					'CartOrderSummaryCouponFormBlock',
 					'Checkout',
 				]
 			);
@@ -315,6 +321,7 @@ final class BlockTypesController {
 				[
 					'AllProducts',
 					'Cart',
+					'CartOrderSummaryCouponFormBlock',
 					'Checkout',
 				]
 			);
