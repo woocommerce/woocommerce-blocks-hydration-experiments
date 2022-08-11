@@ -143,6 +143,9 @@ final class BlockTypesController {
 			$block['blockName'],
 			array(
 				'woocommerce/all-products',
+				'bhe/non-interactive-parent',
+				'bhe/interactive-parent',
+				'bhe/interactive-child',
 			),
 			true
 		) ) {
@@ -279,6 +282,9 @@ final class BlockTypesController {
 			'ProductTitle',
 			'MiniCart',
 			'MiniCartContents',
+			'InteractiveChild',
+			'InteractiveParent',
+			'NonInteractiveParent',
 		];
 
 		$block_types = array_merge( $block_types, Cart::get_cart_block_types(), Checkout::get_checkout_block_types() );
