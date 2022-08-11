@@ -57,6 +57,18 @@ const blocks = {
 	'legacy-template': {
 		customDir: 'classic-template',
 	},
+	'interactive-child': {
+		customDir: 'bhe/blocks/interactive-child',
+		isExperimental: true,
+	},
+	'interactive-parent': {
+		customDir: 'bhe/blocks/interactive-parent',
+		isExperimental: true,
+	},
+	'non-interactive-parent': {
+		customDir: 'bhe/blocks/non-interactive-parent',
+		isExperimental: true,
+	},
 };
 
 // Returns the entries for each block given a relative path (ie: `index.js`,
