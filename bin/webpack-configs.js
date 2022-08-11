@@ -87,7 +87,7 @@ const getCoreConfig = ( options = {} ) => {
 			rules: [
 				{
 					test: /\.(t|j)sx?$/,
-					exclude: /node_modules/,
+					exclude: /node_modules\/(?!(bhe)\/).*/,
 					use: {
 						loader: 'babel-loader?cacheDirectory',
 						options: {
@@ -196,7 +196,7 @@ const getMainConfig = ( options = {} ) => {
 			rules: [
 				{
 					test: /\.(j|t)sx?$/,
-					exclude: /node_modules/,
+					exclude: /node_modules\/(?!(bhe)\/).*/,
 					use: {
 						loader: 'babel-loader?cacheDirectory',
 						options: {
@@ -329,7 +329,7 @@ const getFrontConfig = ( options = {} ) => {
 			rules: [
 				{
 					test: /\.(j|t)sx?$/,
-					exclude: /node_modules/,
+					exclude: /node_modules\/(?!(bhe)\/).*/,
 					use: {
 						loader: 'babel-loader?cacheDirectory',
 						options: {
