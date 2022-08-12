@@ -8,7 +8,6 @@ use Automattic\WooCommerce\Blocks\Assets\Api as AssetApi;
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Blocks\BlockTypes\Cart;
 use Automattic\WooCommerce\Blocks\BlockTypes\Checkout;
-use Automattic\WooCommerce\StoreApi\Utilities\NoticeHandler;
 
 /**
  * BlockTypesController class.
@@ -155,11 +154,7 @@ final class BlockTypesController {
 			return $block_content;
 		}
 
-		$block_type = $instance->block_type;
-		if ( ! $block_type ) {
-			// We might use a better way to flag it here.
-			wc_add_notice( 'You need to make a server registration of ' . $block['blockName'], 'error' );
-		}
+		$block_type       = $instance->block_type;
 		$attr_definitions = $block_type->attributes;
 
 		$attributes         = array();
@@ -306,7 +301,6 @@ final class BlockTypesController {
 				[
 					'AllProducts',
 					'Cart',
-					'CartOrderSummaryCouponFormBlock',
 					'Checkout',
 				]
 			);
@@ -321,7 +315,6 @@ final class BlockTypesController {
 				[
 					'AllProducts',
 					'Cart',
-					'CartOrderSummaryCouponFormBlock',
 					'Checkout',
 				]
 			);

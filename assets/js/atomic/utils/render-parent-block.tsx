@@ -163,7 +163,6 @@ const renderInnerBlocks = ( {
 			...( node instanceof HTMLElement ? node.dataset : {} ),
 			className: node instanceof Element ? node?.className : '',
 		};
-
 		const InnerBlockComponent = getBlockComponentFromMap(
 			blockName,
 			blockMap
@@ -181,7 +180,6 @@ const renderInnerBlocks = ( {
 					node?.textContent ||
 					''
 			);
-
 			// Returns text nodes without manipulation.
 			if ( typeof parsedElement === 'string' && !! parsedElement ) {
 				return parsedElement;
