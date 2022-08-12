@@ -8,5 +8,3 @@ export * from './product-data';
 export * from './derive-selected-shipping-rates';
 export * from './get-icons-from-payment-methods';
 export * from './parse-style';
-export * from './bhe-frontend';
-export * from './bhe-element';
