@@ -100,11 +100,14 @@ final class BlockTypesController {
 			return $content;
 		}
 
-		if ( 'woocommerce/all-products' === $block_name ) {
-			return $content;
-		}
-
-		if ( 'woocommerce/cart-order-summary-coupon-form-block' === $block_name ) {
+		if ( in_array(
+			$block_name,
+			array(
+				'woocommerce/all-products',
+				'woocommerce/cart-order-summary-coupon-form-block',
+			),
+			true
+		) ) {
 			return $content;
 		}
 
