@@ -2,25 +2,23 @@
  * External dependencies
  */
 import { Icon, tag } from '@wordpress/icons';
-import { registerFeaturePluginBlockType } from '@woocommerce/block-settings';
+import { registerBlockType } from 'assets/js/base/utils/bhe-blocks';
 
 /**
  * Internal dependencies
  */
-import { Edit, Save } from './edit';
+import { Edit } from './edit';
+import Frontend from './block';
 
-registerFeaturePluginBlockType(
-	'woocommerce/cart-order-summary-coupon-form-block',
-	{
-		icon: {
-			src: (
-				<Icon
-					icon={ tag }
-					className="wc-block-editor-components-block-icon"
-				/>
-			),
-		},
-		edit: Edit,
-		save: Save,
-	}
-);
+registerBlockType( 'woocommerce/cart-order-summary-coupon-form', {
+	frontend: Frontend,
+	edit: Edit,
+	icon: {
+		src: (
+			<Icon
+				icon={ tag }
+				className="wc-block-editor-components-block-icon"
+			/>
+		),
+	},
+} );
