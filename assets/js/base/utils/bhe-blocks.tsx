@@ -26,7 +26,7 @@ const save =
 		);
 	};
 
-export const registerBlockType = ( name, { frontend, edit, ...rest } ) => {
+export const registerBHEBlockType = ( name, { frontend, edit, ...rest } ) => {
 	gutenbergRegisterBlockType( name, {
 		edit,
 		save: save( name, frontend ),

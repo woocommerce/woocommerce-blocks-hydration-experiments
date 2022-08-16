@@ -2,15 +2,15 @@
  * External dependencies
  */
 import { Icon, tag } from '@wordpress/icons';
-import { registerBlockType } from 'assets/js/base/utils/bhe-blocks';
 
 /**
  * Internal dependencies
  */
 import { Edit } from './edit';
-import Frontend from './block';
+import Frontend from './frontend';
+import { registerBHEBlockType } from '../../../../base/utils/bhe-blocks';
 
-registerBlockType( 'woocommerce/cart-order-summary-coupon-form', {
+registerBHEBlockType( 'woocommerce/cart-order-summary-coupon-form-block', {
 	frontend: Frontend,
 	edit: Edit,
 	icon: {

@@ -7,7 +7,7 @@ import Noninteractive from '@woocommerce/base-components/noninteractive';
 /**
  * Internal dependencies
  */
-import Block from './block';
+import Block from './frontend';
 
 export const Edit = ( {
 	attributes,
