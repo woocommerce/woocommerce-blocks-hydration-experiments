@@ -1,0 +1,7 @@
+{
+	"rules": {
+		"@woocommerce/dependency-group": "off",
+		"react/no-unescaped-entities": "off",
+		"no-duplicate-imports": "off"
+	}
+}

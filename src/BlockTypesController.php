@@ -138,18 +138,12 @@ final class BlockTypesController {
 	 * @return string
 	 */
 	public function block_hydration_wrapper( $block_content, $block, $instance ) {
-		// We might want to use a flag from block.json as the criterion here.
-		if ( ! in_array(
-			$block['blockName'],
-			array(
-				'woocommerce/all-products',
-			),
-			true
-		) ) {
+		$block_type = $instance->block_type;
+
+		if ( ! block_has_support( $block_type, [ 'view' ] ) ) {
 			return $block_content;
 		}
 
-		$block_type       = $instance->block_type;
 		$attr_definitions = $block_type->attributes;
 
 		$attributes         = array();
@@ -171,6 +165,8 @@ final class BlockTypesController {
 			}
 		}
 
+		$hydration_technique = $block_type->supports['view']['hydration'] ?? 'idle';
+
 		$previous_block_to_render = \WP_Block_Supports::$block_to_render;
 		// TODO: The following is a bit hacky. If we stick with this technique, we might
 		// want to change apply_block_supports() to accepts a block as its argument.
@@ -186,13 +182,14 @@ final class BlockTypesController {
 			'data-wp-block-attributes="%4$s" ' .
 			'data-wp-block-sourced-attributes="%5$s" ' .
 			'data-wp-block-props="%6$s" ' .
-			'data-wp-block-hydration="idle">',
+			'data-wp-block-hydration="%7$s">',
 			esc_attr( $block['blockName'] ),
 			esc_attr( wp_json_encode( $block_type->uses_context ) ),
 			esc_attr( wp_json_encode( $block_type->provides_context ) ),
 			esc_attr( wp_json_encode( $attributes ) ),
 			esc_attr( wp_json_encode( $sourced_attributes ) ),
-			esc_attr( wp_json_encode( $block_supports_attributes ) )
+			esc_attr( wp_json_encode( $block_supports_attributes ) ),
+			esc_attr( $hydration_technique )
 		) . '%1$s</wp-block>';
 
 		$template_wrapper = '<template class="wp-inner-blocks">%1$s</template>';
@@ -279,6 +276,9 @@ final class BlockTypesController {
 			'ProductTitle',
 			'MiniCart',
 			'MiniCartContents',
+			'InteractiveChild',
+			'InteractiveParent',
+			'NonInteractiveParent',
 		];
 
 		$block_types = array_merge( $block_types, Cart::get_cart_block_types(), Checkout::get_checkout_block_types() );
