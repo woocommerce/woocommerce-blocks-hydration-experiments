@@ -1,35 +1,31 @@
 /**
  * External dependencies
  */
+import { ReactElement } from 'react';
 import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 import { registerBlockType as gutenbergRegisterBlockType } from '@wordpress/blocks';
-import { Fragment } from '@wordpress/element';
 
-const save =
-	( name, Comp ) =>
-	( { attributes } ) => {
-		const blockProps = useBlockProps.save();
-		const innerBlocksProps = useInnerBlocksProps.save();
-
-		return (
-			<Fragment>
-				<Comp blockProps={ blockProps } attributes={ attributes }>
-					<gutenberg-inner-blocks { ...innerBlocksProps } />
+const Wrapper =
+	( Comp: ReactElement ) =>
+	( { attributes } ) =>
+		(
+			<>
+				{ /* Block Context is not available during save
+				https://wordpress.slack.com/archives/C02QB2JS7/p1649347999484329 */ }
+				<Comp
+					blockProps={ useBlockProps.save() }
+					attributes={ attributes }
+					context={ {} }
+				>
+					<wp-inner-blocks { ...useInnerBlocksProps.save() } />
 				</Comp>
-				{ /* Render InnerBlocks inside a template, to avoid losing them
-            if Comp doesn't render them. */ }
-				<template
-					className="gutenberg-inner-blocks"
-					{ ...innerBlocksProps }
-				/>
-			</Fragment>
+			</>
 		);
-	};
 
-export const registerBHEBlockType = ( name, { frontend, edit, ...rest } ) => {
+export const registerBHEBlockType = ( name, { edit, view, ...rest } ) => {
 	gutenbergRegisterBlockType( name, {
 		edit,
-		save: save( name, frontend ),
+		save: Wrapper( view ),
 		...rest,
 	} );
 };
