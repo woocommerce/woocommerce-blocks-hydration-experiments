@@ -8,9 +8,9 @@ import { Icon, tag } from '@wordpress/icons';
  */
 import { Edit } from './edit';
 import Frontend from './frontend';
-import { registerBHEBlockType } from '../../../../base/utils/bhe-blocks';
+import { registerBlockType } from '../../../../base/utils/bhe-blocks';
 
-registerBHEBlockType( 'woocommerce/cart-order-summary-coupon-form-block', {
+registerBlockType( 'woocommerce/cart-order-summary-coupon-form-block', {
 	frontend: Frontend,
 	edit: Edit,
 	icon: {

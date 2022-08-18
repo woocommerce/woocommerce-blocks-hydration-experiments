@@ -22,7 +22,7 @@ const Wrapper =
 			</>
 		);
 
-export const registerBHEBlockType = ( name, { edit, view, ...rest } ) => {
+export const registerBlockType = ( name, { edit, view, ...rest } ) => {
 	gutenbergRegisterBlockType( name, {
 		edit,
 		save: Wrapper( view ),
