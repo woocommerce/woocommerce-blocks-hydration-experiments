@@ -145,9 +145,11 @@ const renderInnerBlocks = ( {
 		/**
 		 * Do not process the node if its a `<wp-block>` element.
 		 */
+		const WpBlock = window.customElements.get( 'wp-block' );
 		if (
+			WpBlock &&
 			node instanceof HTMLElement &&
-			node instanceof window.customElements.get( 'wp-block' )
+			node instanceof WpBlock
 		) {
 			const reactElement = parse( node.outerHTML );
 
