@@ -9,6 +9,8 @@ import { registerCheckoutBlock } from '@woocommerce/blocks-checkout';
  * Internal dependencies
  */
 import metadata from './component-metadata';
+import { registerBlockType } from '../../../base/utils/bhe-frontend';
+import CouponBlock from '../../cart/inner-blocks/cart-order-summary-coupon-form/frontend';
 
 // Modify webpack publicPath at runtime based on location of WordPress Plugin.
 // eslint-disable-next-line no-undef,camelcase
@@ -157,16 +159,22 @@ registerCheckoutBlock( {
 	),
 } );
 
-registerCheckoutBlock( {
-	metadata: metadata.CART_ORDER_SUMMARY_COUPON_FORM,
-	component: lazy(
-		() =>
-			import(
-				/* webpackChunkName: "cart-blocks/order-summary-coupon-form" */
-				'./cart-order-summary-coupon-form/frontend'
-			)
-	),
-} );
+// Hide registering the block the default way, using instead bhe-frontend.
+registerBlockType(
+	'woocommerce/cart-order-summary-coupon-form-block',
+	CouponBlock
+);
+
+// registerCheckoutBlock( {
+// 	metadata: metadata.CART_ORDER_SUMMARY_COUPON_FORM,
+// component: lazy(
+// 	() =>
+// 		import(
+// 			/* webpackChunkName: "cart-blocks/order-summary-coupon-form" */
+// 			'./cart-order-summary-coupon-form/frontend'
+// 		)
+// ),
+// } );
 
 registerCheckoutBlock( {
 	metadata: metadata.CART_ORDER_SUMMARY_SHIPPING,

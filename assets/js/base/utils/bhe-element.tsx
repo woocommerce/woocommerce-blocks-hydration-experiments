@@ -1,23 +1,59 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
 /**
  * External dependencies
  */
+import {
+	createContext,
+	useContext as useReactContext,
+	useEffect as useReactEffect,
+	useState as useReactState,
+} from '@wordpress/element';
 import { hydrate as ReactHydrate } from 'react-dom';
-import { ReactElement } from 'react';
 
-type HydrateOptions = {
-	technique?: 'media' | 'view' | 'idle';
-	media?: string;
+export const EnvContext = createContext( null );
+
+/**
+ * A React hook that returns the name of the environment.
+ *
+ * This is still a bit hacky. Ideally, Save components should support React
+ * hooks and all the environments (Edit, Save and Frontend) should populate a
+ * normal context. Also, more environments could be added in the future.
+ *
+ * @return A string with the environment the component is loaded, can be {"edit" | "save" | "frontend"}
+ */
+export const useBlockEnvironment = () => {
+	try {
+		const env = useReactContext( EnvContext );
+		if ( env === 'frontend' ) {
+			return 'frontend';
+		}
+		return 'edit';
+	} catch ( e ) {
+		return 'save';
+	}
 };
 
-export const hydrate = (
-	element: ReactElement,
-	container: Element,
-	hydrationOptions: HydrateOptions = {}
-) => {
-	const { technique, media } = hydrationOptions;
+const noop = () => null;
+
+export const useState = ( init ) =>
+	useBlockEnvironment() !== 'save' ? useReactState( init ) : [ init, noop ];
+
+export const useEffect = ( ...args ) =>
+	useBlockEnvironment() !== 'save' ? useReactEffect( ...args ) : noop;
+
+export const useContext = ( Context ) =>
+	useBlockEnvironment() !== 'save'
+		? useReactContext( Context )
+		: Context._currentValue;
+
+export const hydrate = ( element, container, hydrationOptions ) => {
+	const { technique, media } = hydrationOptions || {};
+
 	const cb = () => {
 		ReactHydrate( element, container );
 	};
+
 	switch ( technique ) {
 		case 'media':
 			if ( media ) {
@@ -29,8 +65,10 @@ export const hydrate = (
 				}
 			}
 			break;
+
 		// Hydrate the element when is visible in the viewport.
 		// https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+
 		case 'view':
 			try {
 				const io = new IntersectionObserver( ( entries ) => {
@@ -41,7 +79,7 @@ export const hydrate = (
 						// As soon as we hydrate, disconnect this IntersectionObserver.
 						io.disconnect();
 						cb();
-						break; // break loop on first match
+						break; // Break loop on first match.
 					}
 				} );
 				io.observe( container.children[ 0 ] );
@@ -49,15 +87,19 @@ export const hydrate = (
 				cb();
 			}
 			break;
+
 		case 'idle':
-			// Safari does not support requestIdleCalback, we use a timeout instead. https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback
+			// Safari does not support requestIdleCalback, we use a timeout instead.
+			// https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback
 			if ( 'requestIdleCallback' in window ) {
 				window.requestIdleCallback( cb );
 			} else {
 				setTimeout( cb, 200 );
 			}
 			break;
+
 		// Hydrate this component immediately.
+
 		default:
 			cb();
 	}

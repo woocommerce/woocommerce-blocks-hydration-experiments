@@ -7,7 +7,7 @@ import Noninteractive from '@woocommerce/base-components/noninteractive';
 /**
  * Internal dependencies
  */
-import Block from './block';
+import Block from './frontend';
 
 export const Edit = ( {
 	attributes,
@@ -26,8 +26,4 @@ export const Edit = ( {
 			</Noninteractive>
 		</div>
 	);
-};
-
-export const Save = (): JSX.Element => {
-	return <div { ...useBlockProps.save() } />;
 };

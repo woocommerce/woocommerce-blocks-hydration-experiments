@@ -143,6 +143,20 @@ const renderInnerBlocks = ( {
 	}
 	return Array.from( children ).map( ( node: Node, index: number ) => {
 		/**
+		 * Do not process the node if its a `<wp-block>` element.
+		 */
+		const WpBlock = window.customElements.get( 'wp-block' );
+		if (
+			WpBlock &&
+			node instanceof HTMLElement &&
+			node instanceof WpBlock
+		) {
+			const reactElement = parse( node.outerHTML );
+
+			if ( isValidElement( reactElement ) )
+				return cloneElement( reactElement );
+		}
+		/**
 		 * This will grab the blockName from the data- attributes stored in block markup. Without a blockName, we cannot
 		 * convert the HTMLElement to a React component.
 		 */
@@ -151,7 +165,6 @@ const renderInnerBlocks = ( {
 			...( node instanceof HTMLElement ? node.dataset : {} ),
 			className: node instanceof Element ? node?.className : '',
 		};
-
 		const InnerBlockComponent = getBlockComponentFromMap(
 			blockName,
 			blockMap
@@ -169,7 +182,6 @@ const renderInnerBlocks = ( {
 					node?.textContent ||
 					''
 			);
-
 			// Returns text nodes without manipulation.
 			if ( typeof parsedElement === 'string' && !! parsedElement ) {
 				return parsedElement;
