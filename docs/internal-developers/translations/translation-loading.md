@@ -76,7 +76,7 @@ msgstr ""
 #: assets/js/blocks/featured-product/block.json
 #: build/featured-product/block.json
 msgctxt "block description"
-msgid "Visually highlight a product or variation and encourage prompt action."
+msgid "Highlight a product or variation."
 msgstr "Ein Produkt oder eine Variante visuell hervorheben und zum sofortigen Handeln auffordern."
 
 #: assets/js/blocks/featured-product/block.json

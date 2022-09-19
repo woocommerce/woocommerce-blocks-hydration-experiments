@@ -74,11 +74,12 @@ class Checkout extends AbstractBlock {
 	/**
 	 * Append frontend scripts when rendering the block.
 	 *
-	 * @param array  $attributes Block attributes.
-	 * @param string $content    Block content.
+	 * @param array    $attributes Block attributes.
+	 * @param string   $content    Block content.
+	 * @param WP_Block $block Block instance.
 	 * @return string Rendered block type output.
 	 */
-	protected function render( $attributes, $content ) {
+	protected function render( $attributes, $content, $block ) {
 		if ( $this->is_checkout_endpoint() ) {
 			// Note: Currently the block only takes care of the main checkout form -- if an endpoint is set, refer to the
 			// legacy shortcode instead and do not render block.
@@ -181,20 +182,23 @@ class Checkout extends AbstractBlock {
 			},
 			true
 		);
-		$this->asset_data_registry->add(
-			'shippingCountries',
-			function() {
-				return $this->deep_sort_with_accents( WC()->countries->get_shipping_countries() );
-			},
-			true
-		);
-		$this->asset_data_registry->add(
-			'shippingStates',
-			function() {
-				return $this->deep_sort_with_accents( WC()->countries->get_shipping_country_states() );
-			},
-			true
-		);
+		if ( wc_shipping_enabled() ) {
+			$this->asset_data_registry->add(
+				'shippingCountries',
+				function() {
+					return $this->deep_sort_with_accents( WC()->countries->get_shipping_countries() );
+				},
+				true
+			);
+			$this->asset_data_registry->add(
+				'shippingStates',
+				function() {
+					return $this->deep_sort_with_accents( WC()->countries->get_shipping_country_states() );
+				},
+				true
+			);
+		}
+
 		$this->asset_data_registry->add(
 			'countryLocale',
 			function() {
@@ -420,31 +424,27 @@ class Checkout extends AbstractBlock {
 	 * @return array;
 	 */
 	public static function get_checkout_block_types() {
-		$block_types = [];
-
-		if ( Package::feature()->is_feature_plugin_build() ) {
-			$block_types[] = 'Checkout';
-			$block_types[] = 'CheckoutActionsBlock';
-			$block_types[] = 'CheckoutBillingAddressBlock';
-			$block_types[] = 'CheckoutContactInformationBlock';
-			$block_types[] = 'CheckoutExpressPaymentBlock';
-			$block_types[] = 'CheckoutFieldsBlock';
-			$block_types[] = 'CheckoutOrderNoteBlock';
-			$block_types[] = 'CheckoutOrderSummaryBlock';
-			$block_types[] = 'CheckoutOrderSummaryCartItemsBlock';
-			$block_types[] = 'CheckoutOrderSummaryCouponFormBlock';
-			$block_types[] = 'CheckoutOrderSummaryDiscountBlock';
-			$block_types[] = 'CheckoutOrderSummaryFeeBlock';
-			$block_types[] = 'CheckoutOrderSummaryShippingBlock';
-			$block_types[] = 'CheckoutOrderSummarySubtotalBlock';
-			$block_types[] = 'CheckoutOrderSummaryTaxesBlock';
-			$block_types[] = 'CheckoutPaymentBlock';
-			$block_types[] = 'CheckoutShippingAddressBlock';
-			$block_types[] = 'CheckoutShippingMethodsBlock';
-			$block_types[] = 'CheckoutTermsBlock';
-			$block_types[] = 'CheckoutTotalsBlock';
-		}
-
-		return $block_types;
+		return [
+			'Checkout',
+			'CheckoutActionsBlock',
+			'CheckoutBillingAddressBlock',
+			'CheckoutContactInformationBlock',
+			'CheckoutExpressPaymentBlock',
+			'CheckoutFieldsBlock',
+			'CheckoutOrderNoteBlock',
+			'CheckoutOrderSummaryBlock',
+			'CheckoutOrderSummaryCartItemsBlock',
+			'CheckoutOrderSummaryCouponFormBlock',
+			'CheckoutOrderSummaryDiscountBlock',
+			'CheckoutOrderSummaryFeeBlock',
+			'CheckoutOrderSummaryShippingBlock',
+			'CheckoutOrderSummarySubtotalBlock',
+			'CheckoutOrderSummaryTaxesBlock',
+			'CheckoutPaymentBlock',
+			'CheckoutShippingAddressBlock',
+			'CheckoutShippingMethodsBlock',
+			'CheckoutTermsBlock',
+			'CheckoutTotalsBlock',
+		];
 	}
 }
