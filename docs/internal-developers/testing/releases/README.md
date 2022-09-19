@@ -85,6 +85,10 @@ Every release includes specific testing instructions for new features and bug fi
 -   [8.1.0](./810.md)
 -   [8.2.0](./820.md)
 -   [8.2.1](./821.md)
+-   [8.3.0](./830.md)
+-   [8.3.1](./831.md)
+-   [8.4.0](./840.md)
+-   [8.5.0](./850.md)
 
 <!-- FEEDBACK -->
 
@@ -95,4 +99,3 @@ Every release includes specific testing instructions for new features and bug fi
 🐞 Found a mistake, or have a suggestion? [Leave feedback about this document here.](https://github.com/woocommerce/woocommerce-blocks/issues/new?assignees=&labels=type%3A+documentation&template=--doc-feedback.md&title=Feedback%20on%20./docs/internal-developers/testing/releases/README.md)
 
 <!-- /FEEDBACK -->
-
