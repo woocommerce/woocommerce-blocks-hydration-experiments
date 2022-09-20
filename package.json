@@ -233,6 +233,7 @@
 		"downshift": "6.1.7",
 		"hpq": "^1.3.0",
 		"html-react-parser": "0.14.3",
+		"preact": "^10.11.0",
 		"react-number-format": "4.9.3",
 		"reakit": "1.3.11",
 		"snakecase-keys": "5.4.2",
